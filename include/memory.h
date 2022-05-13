@@ -63,14 +63,9 @@ namespace memory {
      */
     std::string read_narrow_string(const address_t address);
 
-    /**
-     * @param Address to read from
+    /*
+     * @brief 
      */
-    template<typename T>
-    T read(address_t address) { // Add your own implementation
-        return T();
-    }
-
     template<typename T>
     std::vector<T> read_many(address_t address, std::size_t count) {
         if (count <= 0) {
@@ -89,6 +84,14 @@ namespace memory {
 
         free(buffer);
         return ret;
+    }
+
+    /**
+     * @param Address to read from
+     */
+    template<typename T>
+    T read(address_t address) { // Add your own implementation
+        return T();
     }
 
     /**
