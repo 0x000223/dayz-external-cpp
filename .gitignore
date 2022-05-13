@@ -1,0 +1,9 @@
+
+# Ignore build artifacts
+out/
+imgui/out/ 
+cmake-build-debug/
+
+# Ignore environment directories
+.vs/
+.idea/
