@@ -12,6 +12,12 @@
 
 #include <vector>
 
+#define ENTITY_CONFIGNAME_WEAPON "Weapon"
+#define ENTITY_CONFIGNAME_CLOTHING "clothing"
+#define ENTITY_CONFIGNAME_INVENTORY "inventoryItem"
+#define ENTITY_CONFIGNAME_OPTICS "itemoptics"
+#define ENTITY_CONFIGNAME_MAGAZINES "ProxyMagazines"
+
 class network_identity {
 private:
     address_t m_address;
@@ -26,7 +32,6 @@ private:
     address_t m_address;
     address_t m_visual_state_address;
     address_t m_type_address;
-    
 
 public:
     entity() : m_address(0), m_visual_state_address(0), m_type_address(0), m_class_name(""), m_network_id(0), m_skeleton_address(0) {};
@@ -36,6 +41,7 @@ public:
         m_visual_state_address(address != 0 ? memory::read<address_t>(address + O_ENTITY_VISUAL_STATE) : 0),
         m_type_address(address != 0 ? memory::read<address_t>(m_address + O_ENTITY_TYPE) : 0),
         m_class_name(address != 0 ? memory::read_arma_string(m_type_address + O_ENTITYTYPE_CLASSNAME) : ""),
+        m_config_name(address != 0 ? memory::read_arma_string(m_type_address + O_ENTITYTYPE_CONFIGNAME) : ""),
         m_network_id(memory::read<uint32_t>(m_address + O_ENTITY_NETWORK_ID)),
         m_skeleton_address(get_skeleton_address()),
         m_anim_address(memory::read<address_t>(m_skeleton_address + 0xA0)),
@@ -44,6 +50,7 @@ public:
 
     uint32_t m_network_id;
     std::string m_class_name;
+    std::string m_config_name;
     address_t m_skeleton_address;
     address_t m_anim_address;
     address_t m_matrix_address;
@@ -54,7 +61,7 @@ public:
     static const std::vector<uint32_t> INFECTED_JOINT_INDICES;
 
     /*
-     * 
+     * @brief
      */
     address_t get_skeleton_address();
 
@@ -64,7 +71,7 @@ public:
     vector3 get_position();
 
     /*
-     *
+     * @brief
      */
     vector3 get_bone_position(uint32_t index);
 };
