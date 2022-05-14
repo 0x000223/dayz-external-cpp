@@ -135,51 +135,68 @@ int main() {
         ImGui::SetNextWindowPos(ImVec2( 0.f, 0.f ), ImGuiCond_Always);
         ImGui::Begin("window-overlay", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration);
 
-        render::text_stroke(ImVec2(200, 200), ImColor(0, 255, 0), " -= DayZ External Utility =-");
-        render::text_stroke(ImVec2(227, 215), ImColor(160, 160, 160), std::string("[#] Player Count : " + std::to_string(dayz_network.get_player_count())));
+        render::text_stroke(ImVec2(200, 200), COLOR_GREEN, " -= DayZ External Utility =-");
+        render::text_stroke(ImVec2(227, 215), COLOR_SILVER, std::string("[#] Player Count : " + std::to_string(g_network.get_player_count())));
+        render::text_stroke(ImVec2(227, 230), COLOR_SILVER, std::string("[#] Frame Time : " + std::to_string(g_frame_time) + "ms"));
 
         /**
-         * Near entities
+         * Entities
          */
-        for(auto entity : dayz_world.get_near_entities()) { // Rendering near entities
+        for(auto entity : g_world.get_entities()) { // Rendering entities
             auto pos3 = entity.get_position();
-            auto pos2 = dayz_world.m_camera.world_to_screen(pos3);
+            auto pos2 = g_world.m_camera.world_to_screen(pos3);
+            auto distance = g_world.m_localplayer.get_position().distance(pos3); /* World distance from local player to target */
 
-            auto distance = dayz_world.m_localplayer.get_position().distance(pos3); /* World distance from local player to target */
-
-            render::text_stroke(ImVec2(pos2.x, pos2.y), COLOR_RED, std::string(entity.m_class_name + "[" + std::to_string((int)distance) + "m]").c_str()); /* Entity class name */
+            if(config::entity_name) { // Entity class name
+                render::text_stroke(ImVec2(pos2.x, pos2.y), COLOR_RED, std::string(entity.m_class_name + "[" + std::to_string((int)distance) + "m]").c_str());
+            }
             
             /**
              * Bones 
              */
-            const auto bone_indices = entity.m_network_id != 0 ? entity::HUMAN_JOINT_INDICES : entity::INFECTED_JOINT_INDICES;
-            for (uint32_t index = 0; index < bone_indices.size(); index+=2) { // Rendering bones
-                auto f3 = entity.get_bone_position(bone_indices.at(index));
-                auto t3 = entity.get_bone_position(bone_indices.at(index+1));
+            if (config::entity_skeleton) {
+                const auto bone_indices = entity.m_network_id != 0 ? entity::HUMAN_JOINT_INDICES : entity::INFECTED_JOINT_INDICES;
+                for (uint32_t index = 0; index < bone_indices.size(); index += 2) { // Rendering bones
+                    auto f3 = entity.get_bone_position(bone_indices.at(index));
+                    auto t3 = entity.get_bone_position(bone_indices.at(index + 1));
 
-                auto f2 = dayz_world.m_camera.world_to_screen(f3);
-                auto t2 = dayz_world.m_camera.world_to_screen(t3);
+                    auto f2 = g_world.m_camera.world_to_screen(f3);
+                    auto t2 = g_world.m_camera.world_to_screen(t3);
 
-                if (f2 == vector2::zero || t2 == vector2::zero) { continue; }
-                
-                const auto BONE_COLOR = entity.m_network_id ? COLOR_PURPLE : COLOR_RED;
-                render::line(ImVec2(f2.x, f2.y), ImVec2(t2.x, t2.y), BONE_COLOR);
+                    if (f2 == vector2::zero || t2 == vector2::zero) { continue; }
+
+                    const auto BONE_COLOR = entity.m_network_id ? COLOR_PURPLE : COLOR_RED;
+                    render::line(ImVec2(f2.x, f2.y), ImVec2(t2.x, t2.y), BONE_COLOR);
+                }
             }
         }
 
         /**
          * Items 
          */
-        for (auto entity : dayz_world.get_items()) {
+        for (auto& entity : g_world.get_items()) {
             auto pos3 = entity.get_position();
-            auto pos2 = dayz_world.m_camera.world_to_screen(pos3);
-            auto distance = dayz_world.m_localplayer.get_position().distance(pos3); /* World distance from local player to item */
+            auto pos2 = g_world.m_camera.world_to_screen(pos3);
+            auto distance = g_world.m_localplayer.get_position().distance(pos3); /* World distance from local player to item */
 
-            render::text_stroke(ImVec2(pos2.x, pos2.y), COLOR_SILVER, std::string(entity.m_class_name + "[" + std::to_string((int)distance) + "m]").c_str());
+            auto brush_color = COLOR_LAVENDER;
+            if (entity.m_config_name == ENTITY_CONFIGNAME_WEAPON) {
+                brush_color = COLOR_GREENYELLOW;
+            }
+            else if (entity.m_config_name == ENTITY_CONFIGNAME_MAGAZINES) {
+                brush_color = COLOR_GOLD;
+            }
+            else if (entity.m_config_name == ENTITY_CONFIGNAME_CLOTHING) {
+                brush_color = COLOR_DEEPPINK;
+            }
+            else if (entity.m_config_name == ENTITY_CONFIGNAME_OPTICS) {
+                brush_color = COLOR_TEAL;
+            }
+
+            render::text_stroke(ImVec2(pos2.x, pos2.y), brush_color, std::string(entity.m_class_name + "[" + std::to_string((int)distance) + "m]").c_str());
         }
 
         ImGui::End();
-
 
         /**
          * Frame ending
