@@ -106,12 +106,27 @@ int main() {
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        
+
         /*
          * Menu 
          */
-        // Toggle on key press / save config state
-
+        if (GetAsyncKeyState(VK_HOME) & 0x01) { // Toggle menu - xor window transparency flag
+            SetWindowLongPtrA(window::overlay_handle, GWL_EXSTYLE, GetWindowLongA(window::overlay_handle, GWL_EXSTYLE) ^ WS_EX_TRANSPARENT);
+            SetForegroundWindow(window::overlay_handle);
+            config::show_menu = !config::show_menu;
+        }
+        if (config::show_menu) { // Render menu
+            ImGui::Begin("menu", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration);
+            ImGui::Text("DayZ External Utility");
+            if (ImGui::Button("Initialize State")) { state_initialize(); };
+            ImGui::Checkbox("Near Entities", &config::table_entity_near);
+            ImGui::Checkbox("Far Entities", &config::table_entity_far);
+            ImGui::Checkbox("Slow Entities", &config::table_entity_slow);
+            ImGui::Checkbox("Names", &config::entity_name);
+            ImGui::Checkbox("Skeleton", &config::entity_skeleton);
+            ImGui::Checkbox("Inventory Items", &config::item_inventoryitem);
+            ImGui::End();
+        }
 
         /**
          * Overlay
