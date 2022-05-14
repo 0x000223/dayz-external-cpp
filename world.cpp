@@ -33,6 +33,23 @@ std::vector<entity> world::get_slow_entities() const {
     return std::vector<entity>();
 }
 
+std::vector<entity> world::get_entities() const {
+    std::vector<entity> entities;
+    if (config::table_entity_near) {
+        auto near_entities = world::get_near_entities();
+        entities.insert(entities.end(), near_entities.begin(), near_entities.end());
+    }
+    if (config::table_entity_far) {
+        auto far_entities = world::get_far_entities();
+        entities.insert(entities.end(), far_entities.begin(), far_entities.end());
+    }
+    if (config::table_entity_slow) {
+        auto slow_entities = world::get_slow_entities();
+        entities.insert(entities.end(), slow_entities.begin(), slow_entities.end());
+    }
+    return entities;
+}
+
 std::vector<entity> world::get_items() const {
     const auto count = memory::read<uint32_t>(m_address + O_WORLD_ITEM_TABLE + 0x8);
     std::vector<entity> items;
