@@ -4,6 +4,7 @@
 
 #include "world.h"
 #include "entity.h"
+#include "config.h"
 
 std::vector<entity> world::get_near_entities() const {
     const auto count = memory::read<uint32_t>(m_address + O_WORLD_NEAR_TABLE + 0x8);
@@ -57,7 +58,37 @@ std::vector<entity> world::get_items() const {
         const auto flag = memory::read<uint32_t>(m_item_table_address + index * 0x18);
         if (flag == 1) {
             auto item_address = memory::read<address_t>((m_item_table_address + index * 0x18) + 0x8);
-            items.push_back(entity(item_address));
+            auto item = entity(item_address);
+            if (config::item_inventoryitem) {
+                if (item.m_config_name == ENTITY_CONFIGNAME_INVENTORY) {
+                    items.push_back(item);
+                    continue;
+                }
+            }
+            if (config::item_clothing) {
+                if (item.m_config_name == ENTITY_CONFIGNAME_CLOTHING) {
+                    items.push_back(item);
+                    continue;
+                }
+            }
+            if (config::item_weapons) {
+                if (item.m_config_name == ENTITY_CONFIGNAME_WEAPON) {
+                    items.push_back(item);
+                    continue;
+                }
+            }
+            if (config::item_magazines) {
+                if (item.m_config_name == ENTITY_CONFIGNAME_MAGAZINES) {
+                    items.push_back(item);
+                    continue;
+                }
+            }
+            if (config::item_optics) {
+                if (item.m_config_name == ENTITY_CONFIGNAME_OPTICS) {
+                    items.push_back(item);
+                    continue;
+                }
+            }
         }
     }
     return items;
