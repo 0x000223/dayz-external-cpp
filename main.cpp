@@ -189,6 +189,9 @@ int main() {
         render::backend::d3d11_device_context->ClearRenderTargetView(render::backend::d3d11_render_target, clear_color);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
         render::backend::swapchain->Present(0, 0);
+
+        g_end = high_resolution_clock::now();
+        g_frame_time = duration_cast<milliseconds>(g_end - g_start).count();
     }
 
     /**
