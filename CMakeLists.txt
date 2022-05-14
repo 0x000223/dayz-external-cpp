@@ -20,7 +20,9 @@ add_executable(client #WIN32
         render.h
         render.cpp
         network.h 
-        network.cpp)
+        network.cpp 
+        config.h 
+        config.cpp)
 
 target_include_directories(client
         PUBLIC
