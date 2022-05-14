@@ -58,7 +58,7 @@ int main() {
         }
 
         /**
-         * Colors - *temp* 
+         * Colors 
          */
         static const auto COLOR_RED = ImColor(255, 0, 0);
         static const auto COLOR_GREEN = ImColor(0, 255, 0);
@@ -67,7 +67,14 @@ int main() {
         static const auto COLOR_GOLD = ImColor(255, 215, 0);
         static const auto COLOR_WHEAT = ImColor(245, 222, 179);
         static const auto COLOR_SILVER = ImColor(192, 192, 192);
+        static const auto COLOR_MAGENTA = ImColor(255, 0, 255);
+        static const auto COLOR_TEAL = ImColor(0, 128, 128);
+        static const auto COLOR_DEEPPINK = ImColor(255, 20, 147);
+        static const auto COLOR_LAVENDER = ImColor(230, 230, 250);
+        static const auto COLOR_AQUAMARINE = ImColor(127, 255, 212);
+        static const auto COLOR_GREENYELLOW = ImColor(173, 255, 47);
 
+        g_start = high_resolution_clock::now();
 
         /**
          * Frame beginning
