@@ -3,10 +3,13 @@
 #include "world.h"
 #include "render.h"
 #include "network.h"
+#include "config.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
+
+using namespace std::chrono;
 
 /*
  * State Context: 
@@ -16,8 +19,33 @@
  * - network client address
  */
 
+/*
+ * Globals
+ */
+world g_world;
+network g_network;
+
+/*
+ * Debug
+ */
+int g_frame_counter;
+int g_frame_time;
+
+/*
+ * Timer
+ */
+steady_clock::time_point g_start;
+steady_clock::time_point g_end;
+
 bool is_target_running() {
     return process::get_process_id("DayZ_x64.exe") != 0;
+}
+
+void state_initialize() { // Post death / server reconnection
+    g_process_id = process::get_process_id("DayZ_x64.exe");
+    g_module_address = process::get_module_address(L"DayZ_x64.exe");
+    g_world = { world::get_address() };
+    g_network = { memory::read<address_t>(g_module_address + O_NETWORK_MANAGER + O_NETWORK_CLIENT) };
 }
 
 //int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) {
@@ -32,11 +60,7 @@ int main() {
         return -1;
     }
 
-    g_process_id = process::get_process_id("DayZ_x64.exe");
-    g_module_address = process::get_module_address(L"DayZ_x64.exe");
-
-    world dayz_world { world::get_address() };
-    network dayz_network { memory::read<address_t>(g_module_address + O_NETWORK_MANAGER + O_NETWORK_CLIENT) };
+    state_initialize();
 
     /**
      * IMGUI Initializaiton
