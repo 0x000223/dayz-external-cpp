@@ -61,6 +61,11 @@ public:
      */
     std::vector<entity> get_slow_entities() const;
 
+    /*
+     * @brief Custom implementation based on config flags
+     */
+    std::vector<entity> get_entities() const;
+
     /**
      *
      * @return
